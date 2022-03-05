@@ -66,6 +66,14 @@
 			<artifactId>jacoco-maven-plugin</artifactId>
 			<version>0.8.5</version>
 		</dependency>
+
+		<dependency>
+			<groupId>jp.co.hogehoge.framework</groupId>
+			<artifactId>core-property</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/../SharedLibrary/core-property-1.0.0.jar</systemPath>
+		</dependency>
 	</dependencies>
 
 	<reporting>
@@ -111,7 +119,7 @@
 				<configuration>
 					<trimStackTrace>false</trimStackTrace>
 					<systemPropertyVariables>
-						<java.naming.factory.initial>setup.db.datasource.MockContextFactory</java.naming.factory.initial>
+						<java.naming.factory.initial>untest.setup.mock.ds.MockContextFactory</java.naming.factory.initial>
 					</systemPropertyVariables>
 					<argLine>
 						-javaagent:${settings.localRepository}/org/jmockit/jmockit/1.46/jmockit-1.46.jar
