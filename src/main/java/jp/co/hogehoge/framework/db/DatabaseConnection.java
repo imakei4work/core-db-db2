@@ -108,8 +108,9 @@ public class DatabaseConnection implements AutoCloseable {
 	 * @return this
 	 * @throws SQLException
 	 */
-	protected void commit() throws SQLException {
+	protected DatabaseConnection commit() throws SQLException {
 		this.conn.commit();
+		return this;
 	}
 
 	/**
@@ -118,8 +119,9 @@ public class DatabaseConnection implements AutoCloseable {
 	 * @return this
 	 * @throws SQLException
 	 */
-	protected void rollback() throws SQLException {
+	protected DatabaseConnection rollback() throws SQLException {
 		this.conn.rollback();
+		return this;
 	}
 
 	/**
