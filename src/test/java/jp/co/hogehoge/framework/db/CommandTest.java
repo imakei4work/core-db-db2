@@ -61,7 +61,6 @@ public class CommandTest {
 				UnitTestSql.INSERT_001.execute(initData1);
 				UnitTestSql.INSERT_001.execute(initData2);
 			}
-			return null;
 		});
 	}
 
