@@ -149,8 +149,8 @@ public abstract class Sql<P extends Entity, R> {
 				while (true) {
 					try {
 						String sql = this.sql.get();
-						if (logger.isDebugEnabled()) {
-							logger.debug("SQLID={" + sqlId + "}, SQL={" + sql + "}, PARAM=" + args);
+						if (logger.isInfoEnabled()) {
+							logger.info("SQLID={" + sqlId + "}, SQL={" + sql + "}, PARAM=" + args);
 						}
 						return command.execute(DatabaseConnection.getConnection(), sql, args, parser);
 					} catch (SQLException e) {
@@ -158,7 +158,7 @@ public abstract class Sql<P extends Entity, R> {
 						if (Config.RETRY_ERROR_CODE.get().contains(e.getErrorCode())) {
 							if (retryCount-- > 0) {
 								try {
-									logger.debug("リトライ処理実行（カウント=" + retryCount + "）");
+									logger.info("リトライ処理実行（カウント=" + retryCount + "）");
 									Thread.sleep(Config.RETRY_WAIT.get()); // 一定時間待機
 								} catch (InterruptedException ie) {
 									// リトライ処理を継続する必要があるためエラーは無視
@@ -173,6 +173,11 @@ public abstract class Sql<P extends Entity, R> {
 						throw e;
 					}
 				}
+			}
+
+			@Override
+			protected R execute() throws SQLException {
+				return this.execute(null);
 			}
 
 			@Override
@@ -197,6 +202,15 @@ public abstract class Sql<P extends Entity, R> {
 	 * @throws SQLException
 	 */
 	protected abstract R execute(P param) throws SQLException;
+
+	/**
+	 * SQLを実行する。
+	 * 
+	 * @param <R> SQL実行結果のデータ型
+	 * @return SQL実行結果
+	 * @throws SQLException
+	 */
+	protected abstract R execute() throws SQLException;
 
 	/**
 	 * SQLを取得する。
