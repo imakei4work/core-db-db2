@@ -11,13 +11,12 @@ public class UnitTest {
 
 	// テスト実行時は以下のシステムプロパティを設定すること。
 	//
-	// java.naming.factory.initial =
-	// setup.db.datasource.MockContextFactory
+	// java.naming.factory.initial = untest.setup.mock.ds.MockContextFactory
 	//
 	public static void setup() {
 		// ログへ出力されるユーザー名の設定
 		ThreadContext.put("userId", "TEST_USER");
-		
+
 		// データ・ソースの設定
 		try {
 			InitialContext context = new InitialContext();
