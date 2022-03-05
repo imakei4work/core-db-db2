@@ -2,7 +2,6 @@ package jp.co.hogehoge.framework.db;
 
 import java.sql.SQLException;
 import java.util.Stack;
-import java.util.function.Supplier;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +18,8 @@ public class Transaction {
 	protected static Logger logger = LogManager.getLogger(Transaction.class);
 
 	/** トランザクション・スタック */
-	private static final ThreadLocal<Stack<Supplier<?>>> TRANSACTION = ThreadLocal.withInitial(() -> new Stack<>());
+	private static final ThreadLocal<Stack<TransactionExecutor<?>>> TRANSACTION = ThreadLocal
+			.withInitial(() -> new Stack<>());
 
 	/**
 	 * コンストラクタ
@@ -36,8 +36,8 @@ public class Transaction {
 	 * @throws DatabaseConnectionException コネクションの取得に失敗した場合
 	 * @throws TransactionException        コネクション取得後、トランザクション内で何らかのエラーが発生した場合
 	 */
-	public static <R> R start(Supplier<R> transaction) {
-		Stack<Supplier<?>> stack = TRANSACTION.get();
+	public static <R> R start(TransactionExecutor<R> transaction) {
+		Stack<TransactionExecutor<?>> stack = TRANSACTION.get();
 		DatabaseConnection conn = null;
 		R result = null;
 		try {
@@ -46,7 +46,7 @@ public class Transaction {
 			// 生成したトランザクションをトランザクション・スタックへ追加
 			stack.push(transaction);
 			// トランザクションを実行
-			result = transaction.get();
+			result = transaction.execute();
 			// トランザクション・スタックからポップ
 			stack.pop();
 			// トランザクションが先頭（トランザクション・スタックが空）の場合にコミット
@@ -74,11 +74,20 @@ public class Transaction {
 		} finally {
 			try {
 				conn.close();
-			} catch (SQLException se) {
+			} catch (SQLException e) {
 				// NOP
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * トランザクション実行インタフェース。
+	 *
+	 * @param <R> SQL実行結果のデータ型
+	 */
+	public static interface TransactionExecutor<R> {
+		public R execute() throws SQLException;
 	}
 
 }
