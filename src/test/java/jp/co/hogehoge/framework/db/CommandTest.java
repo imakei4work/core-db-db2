@@ -79,8 +79,7 @@ public class CommandTest {
 				UnitTestSql.SELECT_001.getSql(),
 				initData1.toMap(),
 				ResultSetParser.toEntity(AllTypeEntity.class));
-		conn.commit();
-		conn.close();
+		conn.commit().close();
 		assertThat("検索結果が想定通りであること", result.get(), equalTo(initData1));
 	}
 
