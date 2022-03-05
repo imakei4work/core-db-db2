@@ -14,9 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.ibm.db2.jcc.DB2ParameterMetaData;
 import com.ibm.db2.jcc.DB2PreparedStatement;
 
@@ -26,9 +23,6 @@ import com.ibm.db2.jcc.DB2PreparedStatement;
  * @param <R> SQL実行結果のデータ型
  */
 public abstract class Command<R> {
-
-	/** logger */
-	protected Logger logger = LogManager.getLogger(Command.class);
 
 	/**
 	 * SELECT処理を実行するExecutorを提供する。
