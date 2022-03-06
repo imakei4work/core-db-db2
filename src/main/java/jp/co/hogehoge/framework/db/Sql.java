@@ -176,7 +176,7 @@ public abstract class Sql<P extends Entity, R> {
 			}
 
 			@Override
-			protected R execute() throws SQLException {
+			public R execute() throws SQLException {
 				return this.execute(null);
 			}
 
@@ -201,7 +201,7 @@ public abstract class Sql<P extends Entity, R> {
 	 * @return SQL実行結果
 	 * @throws SQLException
 	 */
-	protected abstract R execute(P param) throws SQLException;
+	public abstract R execute(P param) throws SQLException;
 
 	/**
 	 * SQLを実行する。
@@ -210,7 +210,7 @@ public abstract class Sql<P extends Entity, R> {
 	 * @return SQL実行結果
 	 * @throws SQLException
 	 */
-	protected abstract R execute() throws SQLException;
+	public abstract R execute() throws SQLException;
 
 	/**
 	 * SQLを取得する。
