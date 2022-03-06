@@ -35,22 +35,31 @@ public class Transaction {
 	 * @throws DatabaseConnectionException コネクションの取得に失敗した場合
 	 * @throws TransactionException        コネクション取得後、トランザクション内で何らかのエラーが発生した場合
 	 */
-	public static <R> R start(TransactionSupplier<R> supplier) {
+	public static <R> R execute(TransactionSupplier<R> supplier) {
 		Stack<Object> stack = TRANSACTION.get();
 		DatabaseConnection conn = null;
 		R result = null;
 		try {
 			// コネクションを取得
+			logger.debug("データベース・コネクション取得 開始");
 			conn = DatabaseConnection.getConnection();
+			logger.debug("データベース・コネクション取得 終了");
+
 			// 生成したトランザクションをトランザクション・スタックへ追加
 			stack.push(supplier);
+
 			// トランザクションを実行
+			logger.debug("データベース・トランザクション 開始");
 			result = supplier.execute();
+			logger.debug("データベース・トランザクション 終了");
+
 			// トランザクション・スタックからポップ
 			stack.pop();
 			// トランザクションが先頭（トランザクション・スタックが空）の場合にコミット
 			if (stack.isEmpty()) {
+				logger.debug("データベース・コミット 開始");
 				conn.commit();
+				logger.debug("データベース・コミット 終了");
 			}
 		} catch (DatabaseConnectionException e) {
 			// コネクションの取得に失敗した場合、クローズやロールバック等、コネクションに対する処理が実行不可であるため、
@@ -64,7 +73,9 @@ public class Transaction {
 			// トランザクション内でエラーが発生した場合トランザクション・スタックをクリアしてロールバックを行う
 			stack.clear();
 			try {
+				logger.debug("データベース・ロールバック 開始");
 				conn.rollback();
+				logger.debug("データベース・ロールバック 終了");
 				throw new TransactionException(e, Message.DBE00007);
 			} catch (SQLException se) {
 				se.addSuppressed(e);
@@ -72,8 +83,10 @@ public class Transaction {
 			}
 		} finally {
 			try {
+				logger.debug("データベース・クローズ 開始");
 				conn.close();
-			} catch (SQLException e) {
+				logger.debug("データベース・クローズ 終了");
+			} catch (Exception e) {
 				// NOP
 			}
 		}
@@ -87,21 +100,30 @@ public class Transaction {
 	 * @throws DatabaseConnectionException コネクションの取得に失敗した場合
 	 * @throws TransactionException        コネクション取得後、トランザクション内で何らかのエラーが発生した場合
 	 */
-	public static void start(TransactionConsumer consumer) {
+	public static void execute(TransactionConsumer consumer) {
 		Stack<Object> stack = TRANSACTION.get();
 		DatabaseConnection conn = null;
 		try {
 			// コネクションを取得
+			logger.debug("データベース・コネクション取得 開始");
 			conn = DatabaseConnection.getConnection();
+			logger.debug("データベース・コネクション取得 終了");
+
 			// 生成したトランザクションをトランザクション・スタックへ追加
 			stack.push(consumer);
+
 			// トランザクションを実行
+			logger.debug("データベース・トランザクション 開始");
 			consumer.execute();
+			logger.debug("データベース・トランザクション 終了");
+
 			// トランザクション・スタックからポップ
 			stack.pop();
 			// トランザクションが先頭（トランザクション・スタックが空）の場合にコミット
 			if (stack.isEmpty()) {
+				logger.debug("データベース・コミット 開始");
 				conn.commit();
+				logger.debug("データベース・コミット 終了");
 			}
 		} catch (DatabaseConnectionException e) {
 			// コネクションの取得に失敗した場合、クローズやロールバック等、コネクションに対する処理が実行不可であるため、
@@ -115,7 +137,9 @@ public class Transaction {
 			// トランザクション内でエラーが発生した場合トランザクション・スタックをクリアしてロールバックを行う
 			stack.clear();
 			try {
+				logger.debug("データベース・ロールバック 開始");
 				conn.rollback();
+				logger.debug("データベース・ロールバック 終了");
 				throw new TransactionException(e, Message.DBE00007);
 			} catch (SQLException se) {
 				se.addSuppressed(e);
@@ -123,8 +147,10 @@ public class Transaction {
 			}
 		} finally {
 			try {
+				logger.debug("データベース・クローズ 開始");
 				conn.close();
-			} catch (SQLException e) {
+				logger.debug("データベース・クローズ 終了");
+			} catch (Exception e) {
 				// NOP
 			}
 		}
