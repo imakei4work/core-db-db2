@@ -52,7 +52,7 @@ public class CommandTest {
 	// テスト用テーブルの構築と初期データの登録
 	@Before
 	public void before() {
-		Transaction.start(() -> {
+		Transaction.execute(() -> {
 			try {
 				UnitTestSql.DLOP_001.execute();
 			} catch (Exception e) {
