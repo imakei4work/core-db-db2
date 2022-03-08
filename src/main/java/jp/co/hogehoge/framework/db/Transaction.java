@@ -77,7 +77,7 @@ public class Transaction {
 				conn.rollback();
 				logger.debug("データベース・ロールバック 終了");
 				throw new TransactionException(e, Message.DBE00007);
-			} catch (SQLException se) {
+			} catch (Exception se) {
 				se.addSuppressed(e);
 				throw new TransactionException(se, Message.DBE00008);
 			}
@@ -141,7 +141,7 @@ public class Transaction {
 				conn.rollback();
 				logger.debug("データベース・ロールバック 終了");
 				throw new TransactionException(e, Message.DBE00007);
-			} catch (SQLException se) {
+			} catch (Exception se) {
 				se.addSuppressed(e);
 				throw new TransactionException(se, Message.DBE00008);
 			}
