@@ -13,9 +13,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import jp.co.hogehoge.framework.test.db.TestDB;
 import untest.clazz.AllTypeEntity;
 import untest.clazz.UnitTestSql;
-import untest.setup.UnitTest;
+import untest.conf.DBConfig;
 
 public class CommandTest {
 
@@ -46,7 +47,12 @@ public class CommandTest {
 	// データ・ソースの設定
 	@BeforeClass
 	public static void beforeClass() {
-		UnitTest.setup();
+		TestDB.setup(DBConfig.HOST_NAME.get(), // ホスト名
+				DBConfig.PORT_NUMBER.get(), // ポート番号
+				DBConfig.DATABASE_NAME.get(), // データベース名
+				DBConfig.USER_NAME.get(), // ユーザー名
+				DBConfig.PASSWORD.get(), // パスワード
+				DBConfig.CONNECT_OPTION.get()); // 接続オプション
 	}
 
 	// テスト用テーブルの構築と初期データの登録
@@ -71,15 +77,16 @@ public class CommandTest {
 	 */
 	@Test
 	public void select_01() throws SQLException {
-		// act
+		// arrange
 		Command<Optional<AllTypeEntity>> actual = Command.select();
-		// assert
+		// act
 		DatabaseConnection conn = DatabaseConnection.getConnection();
 		Optional<AllTypeEntity> result = actual.execute(conn,
 				UnitTestSql.SELECT_001.getSql(),
 				initData1.toMap(),
 				ResultSetParser.toEntity(AllTypeEntity.class));
 		conn.commit().close();
+		// assert
 		assertThat("検索結果が想定通りであること", result.get(), equalTo(initData1));
 	}
 

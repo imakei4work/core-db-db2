@@ -1,9 +1,9 @@
-package untest.setup.mock.ds;
+package untest.conf;
 
 import jp.co.hogehoge.framework.property.Property;
 import jp.co.hogehoge.framework.property.PropertyType;
 
-public class MockConfig {
+public class DBConfig {
 
 	/** プロパティファイル名 */
 	private static final String FILENAME = "test_database.properties";
