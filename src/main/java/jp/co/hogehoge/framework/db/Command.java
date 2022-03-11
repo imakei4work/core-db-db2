@@ -32,7 +32,6 @@ public abstract class Command<R> {
 	 */
 	public static <R> Command<R> select() {
 		return new Command<R>() {
-
 			@Override
 			public R execute(DatabaseConnection conn, String sql, Map<String, Object> param, ResultSetParser<R> parser)
 					throws SQLException {
