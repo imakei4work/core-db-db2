@@ -16,34 +16,50 @@ import jp.co.hogehoge.framework.db.exception.DatabaseConnectionException;
  */
 public class DatabaseConnection implements AutoCloseable {
 
-	/** データ・ソース */
-	private static DataSource DATA_SOURCE = null;
-
 	/** コネクション */
 	private Connection conn = null;
 
 	/** コネクション（スレッド毎に管理） */
 	private static final ThreadLocal<DatabaseConnection> CONNECTION = ThreadLocal.withInitial(() -> {
 		try {
-			return new DatabaseConnection(DatabaseConnection.DATA_SOURCE.getConnection());
+			return new DatabaseConnection(DatabaseDataSource.INSTANCE.getConnection());
 		} catch (Exception e) {
 			throw new DatabaseConnectionException(e, Message.DBE00003);
 		}
 	});
 
-	// データ・ソースの初期化
-	// エラーが発生した場合はExceptionInInitializerErrorがthrowされる
-	static {
-		try {
-			InitialContext context = new InitialContext();
-			DATA_SOURCE = (DataSource) context.lookup(Config.DATA_SOURCE_PATH.get());
-		} catch (NamingException e) {
-			MissingResourceException me = new MissingResourceException(
-					Message.DBE00004.format(Config.DATA_SOURCE_PATH.get()),
-					Config.DATA_SOURCE_PATH.get(),
-					Config.DATA_SOURCE_PATH.get());
-			me.addSuppressed(e);
-			throw me;
+	/**
+	 * データ・ソース格納クラス。
+	 * 
+	 * データ・ソースを通常のstatic変数として定義し、同様の処理にて初期化（※）した場合、
+	 * データ・ソースがContextにbindされる前にlookupが実行されるため、データ・ソースが取得できない。
+	 * （※staticイニシャライザを想定。それ以外の方法で初期化した場合、排他制御が必要になる。）
+	 * 
+	 * 内部クラスのstatic変数で定義した場合、親クラスがロードされたタイミングでは初期化されず、
+	 * 最初にアクセスされたタイミングで初期化される遅延ロードとなるため、
+	 * データ・ソースがContextのlookupにて取得される前にbindすることが出来る。
+	 */
+	private static class DatabaseDataSource {
+
+		/** データ・ソース・インスタンス */
+		private static DataSource INSTANCE = initialize();
+
+		/**
+		 * データ・ソース初期化処理。
+		 * 
+		 * @return データ・ソース
+		 */
+		private static DataSource initialize() {
+			try {
+				return (DataSource) InitialContext.doLookup(Config.DATA_SOURCE_PATH.get());
+			} catch (NamingException e) {
+				MissingResourceException me = new MissingResourceException(
+						Message.DBE00004.format(Config.DATA_SOURCE_PATH.get()),
+						Config.DATA_SOURCE_PATH.get(),
+						Config.DATA_SOURCE_PATH.get());
+				me.addSuppressed(e);
+				throw me;
+			}
 		}
 	}
 
@@ -72,7 +88,7 @@ public class DatabaseConnection implements AutoCloseable {
 		}
 		if (closed) {
 			try {
-				conn = new DatabaseConnection(DATA_SOURCE.getConnection());
+				conn = new DatabaseConnection(DatabaseDataSource.INSTANCE.getConnection());
 				CONNECTION.set(conn);
 			} catch (Exception e) {
 				throw new DatabaseConnectionException(e, Message.DBE00003);
@@ -82,7 +98,8 @@ public class DatabaseConnection implements AutoCloseable {
 	}
 
 	/**
-	 * プリペアード・ステートメントを取得する。 詳細は{@link Connection#prepareStatement(String)}を参照。
+	 * プリペアード・ステートメントを取得する。
+	 * 詳細は{@link Connection#prepareStatement(String)}を参照。
 	 * 
 	 * @param sql SQL
 	 * @return PreparedStatement
@@ -93,7 +110,8 @@ public class DatabaseConnection implements AutoCloseable {
 	}
 
 	/**
-	 * コネクションがクローズされているかどうかを取得する。 詳細は{@link Connection#isClosed()}を参照。
+	 * コネクションがクローズされているかどうかを取得する。
+	 * 詳細は{@link Connection#isClosed()}を参照。
 	 * 
 	 * @return 判定結果
 	 * @throws SQLException
@@ -103,7 +121,8 @@ public class DatabaseConnection implements AutoCloseable {
 	}
 
 	/**
-	 * コミットを行う。 詳細は{@link Connection#commit()}を参照。
+	 * コミットを行う。
+	 * 詳細は{@link Connection#commit()}を参照。
 	 * 
 	 * @return this
 	 * @throws SQLException
@@ -114,7 +133,8 @@ public class DatabaseConnection implements AutoCloseable {
 	}
 
 	/**
-	 * ロールバックを行う。 詳細は{@link Connection#rollback()}を参照。
+	 * ロールバックを行う。
+	 * 詳細は{@link Connection#rollback()}を参照。
 	 * 
 	 * @return this
 	 * @throws SQLException
@@ -125,7 +145,8 @@ public class DatabaseConnection implements AutoCloseable {
 	}
 
 	/**
-	 * コネクションをクローズする。 詳細は{@link Connection#close()}を参照。
+	 * コネクションをクローズする。
+	 * 詳細は{@link Connection#close()}を参照。
 	 * 
 	 * @throws SQLException
 	 */

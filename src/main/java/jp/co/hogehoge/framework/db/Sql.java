@@ -15,7 +15,6 @@ import jp.co.hogehoge.framework.property.PropertyType;
 
 /**
  * SQL定義。
- * 
  *
  * @param <P> SQL実行パラメータのデータ型
  * @param <R> SQL実行結果のデータ型
