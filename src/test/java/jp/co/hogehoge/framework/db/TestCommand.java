@@ -18,7 +18,7 @@ import untest.clazz.AllTypeEntity;
 import untest.clazz.UnitTestSql;
 import untest.conf.DBConfig;
 
-public class CommandTest {
+public class TestCommand {
 
 	// 初期登録データ
 	private final AllTypeEntity initData1 = (new AllTypeEntity()).setVarcharColumn("12345")
