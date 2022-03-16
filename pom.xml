@@ -15,6 +15,14 @@
 		<jacoco.version>0.8.5</jacoco.version>
 	</properties>
 
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub imakei Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/imakei4work/maven2</url>
+		</repository>
+	</distributionManagement>
+
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
 		<dependency>
@@ -76,7 +84,7 @@
 		<dependency>
 			<groupId>jp.co.hogehoge.framework</groupId>
 			<artifactId>core-test</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.0</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
