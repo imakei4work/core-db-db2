@@ -71,16 +71,13 @@
 			<groupId>jp.co.hogehoge.framework</groupId>
 			<artifactId>core-property</artifactId>
 			<version>1.0.0</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/../SharedLibrary/core-property-1.0.0.jar</systemPath>
 		</dependency>
 
 		<dependency>
 			<groupId>jp.co.hogehoge.framework</groupId>
 			<artifactId>core-test</artifactId>
-			<version>1.0.0</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/../SharedLibrary/core-test-1.0.0.jar</systemPath>
+			<version>1.0.1</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -126,9 +123,6 @@
 				<version>3.0.0-M5</version>
 				<configuration>
 					<trimStackTrace>false</trimStackTrace>
-					<systemPropertyVariables>
-						<java.naming.factory.initial>untest.setup.mock.ds.MockContextFactory</java.naming.factory.initial>
-					</systemPropertyVariables>
 					<argLine>
 						-javaagent:${settings.localRepository}/org/jmockit/jmockit/1.46/jmockit-1.46.jar
 						-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${project.basedir}/target/jacoco.exec
