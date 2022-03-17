@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import jp.co.hogehoge.framework.db.exception.PessimisticLockingException;
+import jp.co.hogehoge.framework.db.exception.SqlExecuteException;
 import jp.co.hogehoge.framework.property.Property;
 import jp.co.hogehoge.framework.property.PropertyType;
 
@@ -25,59 +26,68 @@ public abstract class Sql<P extends Entity, R> {
 	protected Logger logger = LogManager.getLogger(Sql.class);
 
 	/**
-	 * CREATE処理を定義する。 引数に指定されたプロパティファイル（クラスパス上）からSQLIDをキーとして実行するSQLを取得する。
+	 * CREATE処理を定義する。
+	 * 引数に指定されたプロパティファイル（クラスパス上）からSQLIDをキーとして実行するSQLを取得する。
 	 * 正常に処理が終了した場合、戻り値は0が返却される。
 	 * 
 	 * @param          <P> SQL実行パラメータのデータ型
 	 * @param filename プロパティファイル名
 	 * @param sqlId    SQLID
-	 * @return (1) SQLデータ操作言語(DML)文の場合は行数、(2)何も返さないSQL文の場合は0
+	 * @return (1)
+	 *         SQLデータ操作言語(DML)文の場合は行数、(2)何も返さないSQL文の場合は0
 	 */
 	public static <P extends Entity> Sql<P, Integer> defineCreateTable(String filename, String sqlId) {
 		return define(filename, sqlId, Command.create(), null);
 	}
 
 	/**
-	 * DROP処理を定義する。 引数に指定されたプロパティファイル（クラスパス上）からSQLIDをキーとして実行するSQLを取得する。
+	 * DROP処理を定義する。
+	 * 引数に指定されたプロパティファイル（クラスパス上）からSQLIDをキーとして実行するSQLを取得する。
 	 * 正常に処理が終了した場合、戻り値は0が返却される。
 	 * 
 	 * @param          <P> SQL実行パラメータのデータ型
 	 * @param filename プロパティファイル名
 	 * @param sqlId    SQLID
-	 * @return (1) SQLデータ操作言語(DML)文の場合は行数、(2)何も返さないSQL文の場合は0
+	 * @return (1)
+	 *         SQLデータ操作言語(DML)文の場合は行数、(2)何も返さないSQL文の場合は0
 	 */
 	public static <P extends Entity> Sql<P, Integer> defineDropTable(String filename, String sqlId) {
 		return define(filename, sqlId, Command.drop(), null);
 	}
 
 	/**
-	 * DELETE処理を定義する。 引数に指定されたプロパティファイル（クラスパス上）からSQLIDをキーとして実行するSQLを取得する。
+	 * DELETE処理を定義する。
+	 * 引数に指定されたプロパティファイル（クラスパス上）からSQLIDをキーとして実行するSQLを取得する。
 	 * 正常に処理が終了した場合、戻り値は削除レコード数が返却される。
 	 * 
 	 * @param          <P> SQL実行パラメータのデータ型
 	 * @param filename プロパティファイル名
 	 * @param sqlId    SQLID
-	 * @return (1) SQLデータ操作言語(DML)文の場合は行数、(2)何も返さないSQL文の場合は0
+	 * @return (1)
+	 *         SQLデータ操作言語(DML)文の場合は行数、(2)何も返さないSQL文の場合は0
 	 */
 	public static <P extends Entity> Sql<P, Integer> defineDeleteRecords(String filename, String sqlId) {
 		return define(filename, sqlId, Command.delete(), null);
 	}
 
 	/**
-	 * INSERT処理を定義する。 引数に指定されたプロパティファイル（クラスパス上）からSQLIDをキーとして実行するSQLを取得する。
+	 * INSERT処理を定義する。
+	 * 引数に指定されたプロパティファイル（クラスパス上）からSQLIDをキーとして実行するSQLを取得する。
 	 * 正常に処理が終了した場合、戻り値は登録レコード数が返却される。
 	 * 
 	 * @param          <P> SQL実行パラメータのデータ型
 	 * @param filename プロパティファイル名
 	 * @param sqlId    SQLID
-	 * @return (1) SQLデータ操作言語(DML)文の場合は行数、(2)何も返さないSQL文の場合は0
+	 * @return (1)
+	 *         SQLデータ操作言語(DML)文の場合は行数、(2)何も返さないSQL文の場合は0
 	 */
 	public static <P extends Entity> Sql<P, Integer> defineInsertRecord(String filename, String sqlId) {
 		return define(filename, sqlId, Command.insert(), null);
 	}
 
 	/**
-	 * UPDATE処理を定義する。 引数に指定されたプロパティファイル（クラスパス上）からSQLIDをキーとして実行するSQLを取得する。
+	 * UPDATE処理を定義する。
+	 * 引数に指定されたプロパティファイル（クラスパス上）からSQLIDをキーとして実行するSQLを取得する。
 	 * 正常に処理が終了した場合、戻り値は更新レコード数が返却される。
 	 * 
 	 * @param          <P> SQL実行パラメータのデータ型
@@ -139,7 +149,7 @@ public abstract class Sql<P extends Entity, R> {
 			private final Property<String> sql = Property.define(fileName, sqlId, "", PropertyType.isString());
 
 			@Override
-			public R execute(P param) throws SQLException {
+			public R execute(P param) {
 				// SQL実行パラメータのマップ化とリトライ回数の取得
 				Map<String, Object> args = Objects.nonNull(param) ? param.toMap() : null;
 				Integer retryCount = Config.RETRY_COUNT.get();
@@ -169,13 +179,13 @@ public abstract class Sql<P extends Entity, R> {
 							}
 						}
 						// リトライ対象外のエラーは無条件でスロー
-						throw e;
+						throw new SqlExecuteException(e);
 					}
 				}
 			}
 
 			@Override
-			public R execute() throws SQLException {
+			public R execute() {
 				return this.execute(null);
 			}
 
@@ -198,18 +208,20 @@ public abstract class Sql<P extends Entity, R> {
 	 * @param       <R> SQL実行結果のデータ型
 	 * @param param SQL実行パラメータ
 	 * @return SQL実行結果
-	 * @throws SQLException
+	 * @throws SqlExecuteException         SQL実行時エラー
+	 * @throws PessimisticLockingException ロック取得エラー
 	 */
-	public abstract R execute(P param) throws SQLException;
+	public abstract R execute(P param);
 
 	/**
 	 * SQLを実行する。
 	 * 
 	 * @param <R> SQL実行結果のデータ型
 	 * @return SQL実行結果
-	 * @throws SQLException
+	 * @throws SqlExecuteException         SQL実行時エラー
+	 * @throws PessimisticLockingException ロック取得エラー
 	 */
-	public abstract R execute() throws SQLException;
+	public abstract R execute();
 
 	/**
 	 * SQLを取得する。
