@@ -22,7 +22,7 @@ import com.ibm.db2.jcc.DB2PreparedStatement;
  *
  * @param <R> SQL実行結果のデータ型
  */
-public abstract class Command<R> {
+abstract class Command<R> {
 
 	/**
 	 * SELECT処理を実行するExecutorを提供する。

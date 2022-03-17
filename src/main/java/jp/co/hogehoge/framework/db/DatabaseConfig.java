@@ -9,12 +9,12 @@ import jp.co.hogehoge.framework.property.PropertyType;
 /**
  * データベース設定。
  */
-public abstract class Config {
+public abstract class DatabaseConfig {
 
 	/**
 	 * コンストラクタ。
 	 */
-	private Config() {
+	private DatabaseConfig() {
 		// NOP
 	}
 
@@ -22,8 +22,8 @@ public abstract class Config {
 	private static final String FILENAME = "database.properties";
 
 	/** データ・ソース名 */
-	public static final Property<String> DATA_SOURCE_PATH = Property
-			.define(FILENAME, "db.datasource.path", "java:comp/env/jdbc", PropertyType.isString());
+	public static final Property<String> DATA_SOURCE_NAME = Property
+			.define(FILENAME, "db.datasource.name", "java:comp/env/jdbc", PropertyType.isString());
 
 	/** リトライ対象エラーコードリスト */
 	public static final Property<List<Integer>> RETRY_ERROR_CODE = Property.define(FILENAME,

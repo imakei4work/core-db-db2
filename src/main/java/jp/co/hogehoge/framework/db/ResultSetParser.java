@@ -17,7 +17,7 @@ import java.util.Optional;
  * 
  * @param <R> SQL実行結果のデータ型
  */
-public abstract class ResultSetParser<R> {
+abstract class ResultSetParser<R> {
 
 	/** パラメータ R のクラス */
 	protected Class<? extends Entity> clazz;

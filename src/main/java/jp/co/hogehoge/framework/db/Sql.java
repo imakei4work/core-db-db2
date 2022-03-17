@@ -152,7 +152,7 @@ public abstract class Sql<P extends Entity, R> {
 			public R execute(P param) {
 				// SQL実行パラメータのマップ化とリトライ回数の取得
 				Map<String, Object> args = Objects.nonNull(param) ? param.toMap() : null;
-				Integer retryCount = Config.RETRY_COUNT.get();
+				Integer retryCount = DatabaseConfig.RETRY_COUNT.get();
 
 				// SQL実行処理
 				while (true) {
@@ -164,11 +164,11 @@ public abstract class Sql<P extends Entity, R> {
 						return command.execute(DatabaseConnection.getConnection(), sql, args, parser);
 					} catch (SQLException e) {
 						// リトライ対象のエラーコードに該当した場合はリトライ処理を実施
-						if (Config.RETRY_ERROR_CODE.get().contains(e.getErrorCode())) {
+						if (DatabaseConfig.RETRY_ERROR_CODE.get().contains(e.getErrorCode())) {
 							if (retryCount-- > 0) {
 								try {
 									logger.info("リトライ処理実行（カウント=" + retryCount + "）");
-									Thread.sleep(Config.RETRY_WAIT.get()); // 一定時間待機
+									Thread.sleep(DatabaseConfig.RETRY_WAIT.get()); // 一定時間待機
 								} catch (InterruptedException ie) {
 									// リトライ処理を継続する必要があるためエラーは無視
 								}

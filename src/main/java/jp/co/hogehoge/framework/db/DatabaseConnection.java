@@ -14,7 +14,7 @@ import jp.co.hogehoge.framework.db.exception.DatabaseConnectionException;
 /**
  * データベース・コネクション。
  */
-public class DatabaseConnection implements AutoCloseable {
+class DatabaseConnection implements AutoCloseable {
 
 	/** コネクション */
 	private Connection conn = null;
@@ -51,12 +51,12 @@ public class DatabaseConnection implements AutoCloseable {
 		 */
 		private static DataSource initialize() {
 			try {
-				return (DataSource) InitialContext.doLookup(Config.DATA_SOURCE_PATH.get());
+				return (DataSource) InitialContext.doLookup(DatabaseConfig.DATA_SOURCE_NAME.get());
 			} catch (NamingException e) {
 				MissingResourceException me = new MissingResourceException(
-						Message.DBE00004.format(Config.DATA_SOURCE_PATH.get()),
-						Config.DATA_SOURCE_PATH.get(),
-						Config.DATA_SOURCE_PATH.get());
+						Message.DBE00004.format(DatabaseConfig.DATA_SOURCE_NAME.get()),
+						DatabaseConfig.DATA_SOURCE_NAME.get(),
+						DatabaseConfig.DATA_SOURCE_NAME.get());
 				me.addSuppressed(e);
 				throw me;
 			}

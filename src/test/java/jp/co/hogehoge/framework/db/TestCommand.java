@@ -51,7 +51,7 @@ public class TestCommand {
 	// データ・ソースの設定
 	@BeforeClass
 	public static void beforeClass() {
-		TestDB.setup(Config.DATA_SOURCE_PATH.get(), // データ・ソース
+		TestDB.setup(DatabaseConfig.DATA_SOURCE_NAME.get(), // データ・ソース
 				DBConfig.HOST_NAME.get(), // ホスト名
 				DBConfig.PORT_NUMBER.get(), // ポート番号
 				DBConfig.DATABASE_NAME.get(), // データベース名
