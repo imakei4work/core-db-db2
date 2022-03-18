@@ -17,10 +17,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import jp.co.hogehoge.framework.test.db.TestDB;
-import untest.clazz.AllTypeEntity;
-import untest.clazz.NotSupportTypeEntity;
-import untest.clazz.UnitTestSql;
-import untest.conf.DBConfig;
+import untest.conf.TestDBConfig;
+import untest.entity.AllTypeEntity;
+import untest.entity.NotSupportTypeEntity;
+import untest.sql.UnitTestSql;
 
 public class TestCommand {
 
@@ -52,12 +52,12 @@ public class TestCommand {
 	@BeforeClass
 	public static void beforeClass() {
 		TestDB.setup(DatabaseConfig.DATA_SOURCE_NAME.get(), // データ・ソース
-				DBConfig.HOST_NAME.get(), // ホスト名
-				DBConfig.PORT_NUMBER.get(), // ポート番号
-				DBConfig.DATABASE_NAME.get(), // データベース名
-				DBConfig.USER_NAME.get(), // ユーザー名
-				DBConfig.PASSWORD.get(), // パスワード
-				DBConfig.CONNECT_OPTION.get()); // 接続オプション
+				TestDBConfig.HOST.get(), // ホスト名
+				TestDBConfig.PORT.get(), // ポート番号
+				TestDBConfig.DATABASE.get(), // データベース名
+				TestDBConfig.USER.get(), // ユーザー名
+				TestDBConfig.PASSWORD.get(), // パスワード
+				TestDBConfig.OPTION.get()); // 接続オプション
 	}
 
 	// テスト用テーブルの構築と初期データの登録

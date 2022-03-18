@@ -1,4 +1,4 @@
-package untest.clazz;
+package untest.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

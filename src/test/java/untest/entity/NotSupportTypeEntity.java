@@ -1,4 +1,4 @@
-package untest.clazz;
+package untest.entity;
 
 import jp.co.hogehoge.framework.db.Entity;
 

@@ -1,9 +1,10 @@
-package untest.clazz;
+package untest.sql;
 
 import java.util.List;
 import java.util.Optional;
 
 import jp.co.hogehoge.framework.db.Sql;
+import untest.entity.AllTypeEntity;
 
 public class UnitTestSql {
 
