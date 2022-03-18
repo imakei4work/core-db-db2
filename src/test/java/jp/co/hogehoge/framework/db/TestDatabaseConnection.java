@@ -1,12 +1,12 @@
 package jp.co.hogehoge.framework.db;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Objects;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class TestDatabaseConnection {
 	 * 
 	 * @throws Exception
 	 */
-	@Test
+	@Test(expected = DatabaseConnectionException.class)
 	public void getConnection_01() throws Exception {
 		// arrange
 		new MockUp<TestDataSource>() {
@@ -49,13 +49,8 @@ public class TestDatabaseConnection {
 			};
 		};
 		// act
-		try {
-			DatabaseConnection.getConnection();
-			fail("実行された場合はNG");
-		} catch (DatabaseConnectionException e) {
-			// assert
-			assertThat("DatabaseConnectionExceptionがスローされること", e.getMessage(), equalTo(Message.DBE00003.get()));
-		}
+		DatabaseConnection.getConnection();
+		fail("実行された場合はNG");
 	}
 
 	/**
@@ -63,7 +58,7 @@ public class TestDatabaseConnection {
 	 * 
 	 * @throws SQLException
 	 */
-	@Test
+	@Test(expected = DatabaseConnectionException.class)
 	public void getConnection_02() throws SQLException {
 		// arrange
 		try (DatabaseConnection conn = DatabaseConnection.getConnection()) {
@@ -79,12 +74,8 @@ public class TestDatabaseConnection {
 			};
 		};
 		// act
-		try {
-			DatabaseConnection.getConnection();
-			fail("実行された場合はNG");
-		} catch (DatabaseConnectionException e) {
-			assertThat("DatabaseConnectionExceptionがスローされること", e.getMessage(), equalTo(Message.DBE00003.get()));
-		}
+		DatabaseConnection.getConnection();
+		fail("実行された場合はNG");
 	}
 
 	/**
@@ -99,7 +90,7 @@ public class TestDatabaseConnection {
 			// 一度コネクションを取得してクローズする
 			conn.commit();
 		}
-		new MockUp<TestDataSource>() {
+		new MockUp<DatabaseConnection>() {
 			@Mock
 			public boolean isClosed() throws SQLException {
 				{
@@ -110,11 +101,11 @@ public class TestDatabaseConnection {
 		// act
 		try (DatabaseConnection conn = DatabaseConnection.getConnection()) {
 			// assert
-			assertFalse("クローズ確認にてエラーが発生した場合でも正常にコネクションが取得できること", conn.isClosed());
+			assertTrue("クローズ確認にてエラーが発生した場合でも正常にコネクションが取得できること", Objects.nonNull(conn));
+			conn.commit();
 		} catch (Exception e) {
 			fail("実行された場合はNG");
 		}
-
 	}
 
 	/**
