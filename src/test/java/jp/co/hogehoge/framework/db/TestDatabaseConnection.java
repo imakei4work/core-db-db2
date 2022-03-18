@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Objects;
 
@@ -18,6 +19,7 @@ import jp.co.hogehoge.framework.test.db.ds.TestDataSource;
 import mockit.Mock;
 import mockit.MockUp;
 import untest.conf.TestDBConfig;
+import untest.sql.UnitTestSql;
 
 public class TestDatabaseConnection {
 
@@ -133,9 +135,103 @@ public class TestDatabaseConnection {
 			// assert
 			assertTrue("クローズ確認にてエラーが発生した場合でも正常にコネクションが取得できること", Objects.nonNull(conn));
 			conn.commit();
-		} catch (Exception e) {
-			fail("実行された場合はNG");
 		}
+	}
+
+	/**
+	 * PrepareStatementが取得できること。
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void prepareStatement_01() throws SQLException {
+		try (DatabaseConnection conn = DatabaseConnection.getConnection()) {
+			// act
+			try (PreparedStatement actual = conn.prepareStatement(UnitTestSql.SELECT_001.getSql())) {
+				// assert
+				assertTrue("PrepareStatementが取得できること", Objects.nonNull(actual));
+			}
+			conn.commit();
+		}
+	}
+
+	/**
+	 * 想定する接続状態が取得できること。
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void isClosed_01() throws SQLException {
+		// arrange
+		try (DatabaseConnection conn = DatabaseConnection.getConnection()) {
+			// act
+			boolean actual = conn.isClosed();
+			// assert
+			assertFalse("接続中であること", actual);
+			conn.commit();
+		}
+	}
+
+	/**
+	 * 想定する接続状態が取得できること。
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void isClosed_02() throws SQLException {
+		// arrange
+		DatabaseConnection conn = DatabaseConnection.getConnection();
+		conn.commit().close();
+		// act
+		boolean actual = conn.isClosed();
+		// assert
+		assertTrue("コネクションが切断されていること", actual);
+	}
+
+	/**
+	 * コミット処理が正常実行できること。
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void commit_01() throws SQLException {
+		try (DatabaseConnection conn = DatabaseConnection.getConnection()) {
+			// act
+			DatabaseConnection actual = conn.commit();
+			// assert
+			assertTrue("コミット処理が正常実行できること", Objects.nonNull(actual));
+		}
+	}
+
+	/**
+	 * ロールバック処理が正常実行できること。
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void rollback_01() throws SQLException {
+		// arrange
+		try (DatabaseConnection conn = DatabaseConnection.getConnection()) {
+			// act
+			DatabaseConnection actual = conn.rollback();
+			// assert
+			assertTrue("ロールバック処理が正常実行できること", Objects.nonNull(actual));
+		}
+	}
+
+	/**
+	 * コネクションが切断されること。
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void close_01() throws SQLException {
+		// arrange
+		DatabaseConnection conn = DatabaseConnection.getConnection();
+		// act
+		conn.commit().close();
+		// assert
+		assertTrue("コネクションが切断されていること", conn.isClosed());
 	}
 
 }
