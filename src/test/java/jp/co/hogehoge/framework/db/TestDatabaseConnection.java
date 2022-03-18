@@ -33,44 +33,12 @@ public class TestDatabaseConnection {
 	}
 
 	/**
-	 * コネクションが取得できること。
-	 * 
-	 * @throws SQLException
-	 */
-	@Test
-	public void getConnection_01() throws SQLException {
-		// act
-		try (DatabaseConnection actual = DatabaseConnection.getConnection()) {
-			// assert
-			assertFalse("コネクションが取得できること", actual.isClosed());
-			actual.commit();
-		}
-	}
-
-	/**
-	 * クローズされていないコネクションが再取得できること。
-	 * 
-	 * @throws SQLException
-	 */
-	@Test
-	public void getConnection_02() throws SQLException {
-		// arrange
-		DatabaseConnection.getConnection();
-		// act
-		try (DatabaseConnection actual = DatabaseConnection.getConnection()) {
-			// assert
-			assertFalse("クローズされていないコネクションが再取得できること", actual.isClosed());
-			actual.commit();
-		}
-	}
-
-	/**
 	 * コネクション取得エラーの場合にDatabaseConnectionExceptionがスローされること。
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void getConnection_03() throws Exception {
+	public void getConnection_01() throws Exception {
 		// arrange
 		new MockUp<TestDataSource>() {
 			@Mock
@@ -96,7 +64,7 @@ public class TestDatabaseConnection {
 	 * @throws SQLException
 	 */
 	@Test
-	public void getConnection_04() throws SQLException {
+	public void getConnection_02() throws SQLException {
 		// arrange
 		try (DatabaseConnection conn = DatabaseConnection.getConnection()) {
 			// 一度コネクションを取得してクローズする
@@ -125,7 +93,7 @@ public class TestDatabaseConnection {
 	 * @throws SQLException
 	 */
 	@Test
-	public void getConnection_05() throws SQLException {
+	public void getConnection_03() throws SQLException {
 		// arrange
 		try (DatabaseConnection conn = DatabaseConnection.getConnection()) {
 			// 一度コネクションを取得してクローズする
@@ -147,6 +115,38 @@ public class TestDatabaseConnection {
 			fail("実行された場合はNG");
 		}
 
+	}
+
+	/**
+	 * コネクションが取得できること。
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void getConnection_04() throws SQLException {
+		// act
+		try (DatabaseConnection actual = DatabaseConnection.getConnection()) {
+			// assert
+			assertFalse("コネクションが取得できること", actual.isClosed());
+			actual.commit();
+		}
+	}
+
+	/**
+	 * クローズされていないコネクションが再取得できること。
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void getConnection_05() throws SQLException {
+		// arrange
+		DatabaseConnection.getConnection();
+		// act
+		try (DatabaseConnection actual = DatabaseConnection.getConnection()) {
+			// assert
+			assertFalse("クローズされていないコネクションが再取得できること", actual.isClosed());
+			actual.commit();
+		}
 	}
 
 }
