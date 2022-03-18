@@ -59,12 +59,17 @@ class DatabaseConnection implements AutoCloseable {
 	}
 
 	/**
-	 * コンストラクタ。
+	 * コネクションを確立する。
 	 * 
-	 * @param conn コネクション
+	 * @return データベース・コネクション
 	 */
-	private DatabaseConnection(Connection conn) {
-		this.conn = conn;
+	private DatabaseConnection connect() {
+		try {
+			this.conn = DatabaseDataSource.INSTANCE.getConnection();
+		} catch (Exception e) {
+			throw new DatabaseConnectionException(e, Message.DBE00003);
+		}
+		return this;
 	}
 
 	/**
@@ -75,20 +80,18 @@ class DatabaseConnection implements AutoCloseable {
 	 */
 	protected static DatabaseConnection getConnection() {
 		DatabaseConnection conn = CONNECTION.get();
-		boolean closed = true;
-		try {
-			if (Objects.nonNull(conn)) {
-				closed = conn.isClosed();
-			}
-		} catch (Exception e) {
-			// エラーが発生した場合はコネクションを再取得
-		}
-		if (closed) {
+		if (Objects.isNull(conn)) {
+			conn = new DatabaseConnection();
+			CONNECTION.set(conn.connect());
+		} else {
+			boolean closed = true;
 			try {
-				conn = new DatabaseConnection(DatabaseDataSource.INSTANCE.getConnection());
-				CONNECTION.set(conn);
+				closed = conn.isClosed();
 			} catch (Exception e) {
-				throw new DatabaseConnectionException(e, Message.DBE00003);
+				// エラーが発生した場合はコネクションを再取得
+			}
+			if (closed) {
+				conn.connect();
 			}
 		}
 		return conn;
