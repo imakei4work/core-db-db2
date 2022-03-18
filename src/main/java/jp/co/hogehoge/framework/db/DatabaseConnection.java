@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.MissingResourceException;
+import java.util.Objects;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -20,13 +21,7 @@ class DatabaseConnection implements AutoCloseable {
 	private Connection conn = null;
 
 	/** コネクション（スレッド毎に管理） */
-	private static final ThreadLocal<DatabaseConnection> CONNECTION = ThreadLocal.withInitial(() -> {
-		try {
-			return new DatabaseConnection(DatabaseDataSource.INSTANCE.getConnection());
-		} catch (Exception e) {
-			throw new DatabaseConnectionException(e, Message.DBE00003);
-		}
-	});
+	private static final ThreadLocal<DatabaseConnection> CONNECTION = new ThreadLocal<>();
 
 	/**
 	 * データ・ソース格納クラス。
@@ -82,7 +77,9 @@ class DatabaseConnection implements AutoCloseable {
 		DatabaseConnection conn = CONNECTION.get();
 		boolean closed = true;
 		try {
-			closed = conn.isClosed();
+			if (Objects.nonNull(conn)) {
+				closed = conn.isClosed();
+			}
 		} catch (Exception e) {
 			// エラーが発生した場合はコネクションを再取得
 		}
